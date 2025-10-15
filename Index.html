@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guía rápida de Git — Comandos esenciales</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#0f1620; --muted:#7c8aa5; --text:#eaf2ff; --accent:#4cc38a; --accent-2:#3e63dd; --danger:#ff6b6b;
+      --code-bg:#0b1322; --border:#1b2430; --chip:#0e1a2b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,#0b0f14,#0a0e13);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,15,20,.8);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px}
+    h1{margin:0 0 8px;font-size:clamp(22px,2.8vw,34px)}
+    .subtitle{color:var(--muted);margin:0 0 14px}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    input[type="search"]{flex:1;min-width:240px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--panel);color:var(--text)}
+    .chip{background:var(--chip);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:999px;font-size:12px}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:16px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+    .card h3{font-size:16px;margin:0;padding:12px 14px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+    .card .body{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+    .desc{color:var(--muted);font-size:14px}
+
+    pre{margin:0;background:var(--code-bg);border:1px solid var(--border);padding:10px;border-radius:10px;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px}
+
+    .kbd{display:inline-block;padding:.1em .45em;border:1px solid var(--border);border-bottom-color:#0003;border-radius:6px;background:var(--chip);font-size:.85em}
+    .tag{font-size:11px;color:#b9c6e1;background:rgba(62,99,221,.12);border:1px solid rgba(62,99,221,.35);padding:2px 6px;border-radius:999px}
+    .accent{color:var(--accent)}
+    .note{border-left:3px solid var(--accent-2);background:rgba(62,99,221,.08);padding:10px;border-radius:10px}
+
+    footer{color:var(--muted);padding:40px 0;margin-top:24px;border-top:1px solid var(--border)}
+    a{color:var(--accent-2);text-decoration:none}
+    a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Guía rápida de <span class="accent">Git</span></h1>
+      <p class="subtitle">Comandos esenciales, ejemplos prácticos y flujos comunes. Filtra por palabras clave para encontrar lo que necesitas.</p>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Filtrar por comando, verbo o tema (ej: commit, rama, revertir, stash)" />
+        <span class="chip">Tip: presiona <span class="kbd">Ctrl</span> + <span class="kbd">F</span> para buscar en la página</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="note">
+      <strong>Configuración inicial</strong>
+      <div class="grid" data-section="configuracion">
+        <div class="card" data-tags="config usuario correo global">
+          <h3>Configurar tu identidad</h3>
+          <div class="body">
+            <pre><code>git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"</code></pre>
+            <p class="desc">Git usa estos datos para firmar tus commits.</p>
+          </div>
+        </div>
+        <div class="card" data-tags="config editor alias color diffs">
+          <h3>Otras opciones útiles</h3>
+          <div class="body">
+            <pre><code>git config --global core.editor "code --wait"
+git config --global init.defaultBranch main
+# alias comunes
+git config --global alias.st "status -sb"
+git config --global alias.co "checkout"
+</code></pre>
+            <p class="desc">Personaliza editor, rama por defecto y atajos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <h2>Flujo básico</h2>
+    <div class="grid" data-section="basico">
+      <div class="card" data-tags="nuevo repo iniciar init">
+        <h3>Iniciar un repo</h3>
+        <div class="body">
+          <pre><code>mkdir mi-proyecto &amp;&amp; cd mi-proyecto
+git init</code></pre>
+          <p class="desc">Crea un repositorio dentro de una carpeta existente.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="clonar remote remoto">
+        <h3>Clonar un repo</h3>
+        <div class="body">
+          <pre><code>git clone https://github.com/usuario/proyecto.git
+# o con SSH
+git clone git@github.com:usuario/proyecto.git</code></pre>
+          <p class="desc">Copia el repositorio remoto de GitHub/GitLab/Bitbucket.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="estado status cambios area preparacion staging">
+        <h3>Ver estado</h3>
+        <div class="body">
+          <pre><code>git status -sb</code></pre>
+          <p class="desc">Muestra archivos modificados, sin seguimiento y rama actual.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="agregar add stage staging seleccionar patrones">
+        <h3>Añadir cambios</h3>
+        <div class="body">
+          <pre><code>git add archivo.txt
+# todo el directorio actual
+git add .
+# interactivamente por fragmentos
+git add -p</code></pre>
+          <p class="desc">Lleva cambios al <em>staging area</em> para prepararlos al commit.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="commit guardar mensaje historial atomico">
+        <h3>Crear un commit</h3>
+        <div class="body">
+          <pre><code>git commit -m "feat: agrega formulario de login"</code></pre>
+          <p class="desc">Guarda un punto en el historial con un mensaje claro.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="log historial grafo pretty">
+        <h3>Ver historial</h3>
+        <div class="body">
+          <pre><code>git log --oneline --graph --decorate --all</code></pre>
+          <p class="desc">Resumen del historial con ramas y etiquetas.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="diff diferencias comparar cambios staged no staged">
+        <h3>Comparar cambios</h3>
+        <div class="body">
+          <pre><code># vs el último commit
+git diff
+# lo que va en el próximo commit
+git diff --staged</code></pre>
+          <p class="desc">Muestra diferencias línea por línea.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Trabajo con ramas</h2>
+    <div class="grid" data-section="ramas">
+      <div class="card" data-tags="branch crear listar eliminar">
+        <h3>Crear y listar ramas</h3>
+        <div class="body">
+          <pre><code>git branch            # lista
+git branch feature/ui # crea</code></pre>
+          <p class="desc">Crea ramas para trabajar aislado sin afectar <code>main</code>.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="checkout switch cambiar moverse">
+        <h3>Cambiar de rama</h3>
+        <div class="body">
+          <pre><code>git switch feature/ui
+# crear y cambiar
+git switch -c fix/bug-123</code></pre>
+          <p class="desc">Usa <code>switch</code> en lugar de <code>checkout</code> para ramas.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="merge integrar combinar conflictos">
+        <h3>Unir (merge)</h3>
+        <div class="body">
+          <pre><code># desde main
+git merge feature/ui</code></pre>
+          <p class="desc">Integra los cambios de una rama. Si hay conflictos, edítalos y <code>git add</code> + <code>git commit</code>.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="rebase linearizar actualizar fast-forward">
+        <h3>Rebase (actualizar rama)</h3>
+        <div class="body">
+          <pre><code># estando en tu rama de trabajo
+git fetch origin
+git rebase origin/main</code></pre>
+          <p class="desc">Reaplica tus commits encima de <code>main</code> para un historial más lineal.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="tag version releases anotadas">
+        <h3>Etiquetas (tags)</h3>
+        <div class="body">
+          <pre><code># liviana
+git tag v1.0.0
+# anotada (recomendada)
+git tag -a v1.0.0 -m "Primera versión"
+# enviar tags
+git push --tags</code></pre>
+          <p class="desc">Marca versiones en puntos específicos del historial.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Remotos</h2>
+    <div class="grid" data-section="remotos">
+      <div class="card" data-tags="remote agregar listar url">
+        <h3>Gestionar remotos</h3>
+        <div class="body">
+          <pre><code>git remote -v
+git remote add origin https://github.com/usuario/proyecto.git
+git remote set-url origin git@github.com:usuario/proyecto.git</code></pre>
+          <p class="desc">Conecta el repo local con uno remoto.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="fetch actualizar refs bajar cambios">
+        <h3>Traer referencias</h3>
+        <div class="body">
+          <pre><code>git fetch origin</code></pre>
+          <p class="desc">Actualiza punteros de ramas remotas sin mezclar cambios.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="pull actualizar sincronizar rebase">
+        <h3>Actualizar (pull)</h3>
+        <div class="body">
+          <pre><code># merge por defecto
+git pull origin main
+# o con rebase (historial lineal)
+git pull --rebase origin main</code></pre>
+          <p class="desc">Descarga y combina (o reubica) cambios del remoto.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="push publicar subir upstream establecer">
+        <h3>Publicar cambios (push)</h3>
+        <div class="body">
+          <pre><code># primera vez para una rama nueva
+git push -u origin feature/ui
+# siguientes veces
+git push</code></pre>
+          <p class="desc">Envía tus commits al remoto y establece upstream.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Deshacer y recuperación</h2>
+    <div class="grid" data-section="deshacer">
+      <div class="card" data-tags="restore descartar cambios archivo working tree">
+        <h3>Descartar cambios en archivo</h3>
+        <div class="body">
+          <pre><code>git restore archivo.txt
+# quitar del staging
+git restore --staged archivo.txt</code></pre>
+          <p class="desc">Vuelve un archivo al estado del último commit o saca del área de preparación.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="reset mover HEAD soft mixed hard cuidado">
+        <h3>Reset (mover HEAD)</h3>
+        <div class="body">
+          <pre><code># conserva cambios en staging
+git reset --soft HEAD~1
+# conserva cambios en working tree
+git reset --mixed HEAD~1
+# descarta todo (peligroso)
+git reset --hard HEAD~1</code></pre>
+          <p class="desc">Mueve la referencia actual y opcionalmente descarta cambios.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="revert revertir commit publico seguridad">
+        <h3>Revertir (commit inverso)</h3>
+        <div class="body">
+          <pre><code>git revert &lt;hash-commit&gt;</code></pre>
+          <p class="desc">Crea un commit que deshace otro sin reescribir historial (ideal en ramas compartidas).</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="reflog recuperar HEAD perdido historial oculto">
+        <h3>Reflog (salvavidas)</h3>
+        <div class="body">
+          <pre><code>git reflog
+# volver a un punto visto en reflog
+git reset --hard &lt;ref&gt;</code></pre>
+          <p class="desc">Historial de movimientos de HEAD; útil para recuperar estados perdidos.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Stash & trabajo temporal</h2>
+    <div class="grid" data-section="stash">
+      <div class="card" data-tags="stash guardar temporal cambios context switch">
+        <h3>Guardar temporalmente</h3>
+        <div class="body">
+          <pre><code>git stash push -m "wip: ajuste navbar"
+# aplicar y quitar de la pila
+git stash pop
+# listar
+git stash list</code></pre>
+          <p class="desc">Guarda cambios sin comitear para cambiar de contexto rápido.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Colaboración y calidad</h2>
+    <div class="grid" data-section="calidad">
+      <div class="card" data-tags="bisect bug buscar commit malo binary search">
+        <h3>Encontrar commit que introdujo un bug</h3>
+        <div class="body">
+          <pre><code>git bisect start
+git bisect bad            # estado actual tiene bug
+git bisect good v1.0.0    # etiqueta/commit conocido como bueno
+# (Git te mueve; prueba y marca good/bad hasta encontrar el culpable)</code></pre>
+          <p class="desc">Búsqueda binaria en el historial para aislar el commit problemático.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="cherry-pick seleccionar traer commit otra rama">
+        <h3>Traer un commit específico</h3>
+        <div class="body">
+          <pre><code>git cherry-pick &lt;hash-commit&gt;</code></pre>
+          <p class="desc">Aplica un commit de otra rama sobre la actual.</p>
+        </div>
+      </div>
+
+      <div class="card" data-tags="gitignore ignorar archivos patrones cache rm cached">
+        <h3>Ignorar archivos</h3>
+        <div class="body">
+          <pre><code>echo node_modules/ &gt;&gt; .gitignore
+# si ya estaban trackeados
+git rm -r --cached node_modules/</code></pre>
+          <p class="desc">Evita subir archivos generados o secretos.</p>
+        </div>
+      </div>
+    </div>
+
+    <section class="note" style="margin-top:18px">
+      <strong>Flujos recomendados</strong>
+      <ul>
+        <li><span class="tag">Feature Branch</span> — Crea una rama por funcionalidad: <code>switch -c feature/x</code> → commits → <code>push -u</code> → PR/MR → <code>merge</code> o <code>rebase</code>.</li>
+        <li><span class="tag">Pull con rebase</span> — Mantén historial limpio: <code>git pull --rebase origin main</code>.</li>
+        <li><span class="tag">Conventional Commits</span> — Usa prefijos como <code>feat:</code>, <code>fix:</code>, <code>docs:</code>, etc.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Ing.Marcelo Casanovas - Introduccion a GIT - UDI 2025</p>
+    </footer>
+  </main>
+
+  <script>
+    const search = document.getElementById('search');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const normalize = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    function filterCards(q){
+      const nq = normalize(q);
+      cards.forEach(c=>{
+        const hay = normalize(c.innerText + ' ' + (c.dataset.tags||''));
+        c.style.display = (nq==='' || hay.includes(nq)) ? '' : 'none';
+      });
+    }
+
+    search.addEventListener('input', e=>filterCards(e.target.value));
+  </script>
+</body>
+</html>
